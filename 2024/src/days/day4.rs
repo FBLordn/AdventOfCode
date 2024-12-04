@@ -1,11 +1,56 @@
+use std::vec;
+
 use super::{impl_day, Part1, Part2};
 
 impl_day!(Day4, 4);
 
 impl Part1 for Day4 {
     fn part1(&self, input: &str) -> usize {
-        todo!()
+        let lines: Vec<Vec<char>> = input.lines().map(|x| x.chars().collect()).collect();
+        count_occurences(lines.iter().map(|f| f.iter()))
+            + count_occurences(transformers_diag(input, false).iter().map(|f| f.iter()))
+            + count_occurences(transformers_diag(input, true).iter().map(|f| f.iter()))
+            + count_occurences(
+                tranpose(lines.iter().map(|f| f.iter()))
+                    .iter()
+                    .map(|f| f.iter().copied()),
+            )
     }
+}
+
+fn transformers_diag(input: &str, is_back: bool) -> Vec<Vec<char>> {
+    let lines: Vec<Vec<char>> = input.lines().map(|x| x.chars().collect()).collect();
+    let max_l = lines[0].len() - 1;
+    let mut ret: Vec<Vec<char>> = vec![vec![]; max_l + lines.len() + 1];
+    for i in 0..lines.len() {
+        for j in 0..=max_l {
+            let t = if is_back { max_l - j } else { j };
+            ret[i + t].push(lines[i][j]);
+        }
+    }
+    ret
+}
+
+fn tranpose<T>(input: impl Iterator<Item: Iterator<Item = T>> + Clone) -> Vec<Vec<T>> {
+    let len = input.clone().next().unwrap().count();
+    let mut iters: Vec<_> = input.collect();
+    (0..len)
+        .map(|_| {
+            iters
+                .iter_mut()
+                .map(|n| n.next().unwrap())
+                .collect::<Vec<T>>()
+        })
+        .collect()
+}
+
+fn count_occurences<'a>(input: impl Iterator<Item: Iterator<Item = &'a char>>) -> usize {
+    input
+        .into_iter()
+        .map(|f| f.into_iter().collect::<String>())
+        .fold(0, |sum, f| {
+            sum + f.match_indices("XMAS").count() + f.match_indices("SAMX").count()
+        })
 }
 
 impl Part2 for Day4 {
@@ -20,7 +65,21 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        assert_eq!(Day4.part1(todo!()), todo!());
+        assert_eq!(
+            Day4.part1(
+                "MMMSXXMASM
+MSAMXMSMSA
+AMXSXMAAMM
+MSAMASMSMX
+XMASAMXAMM
+XXAMMXXAMA
+SMSMSASXSS
+SAXAMASAAA
+MAMMMXMMMM
+MXMXAXMASX"
+            ),
+            18
+        );
     }
 
     #[test]

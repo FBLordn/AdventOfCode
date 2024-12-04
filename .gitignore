@@ -2,4 +2,4 @@ target/
 data/
 .vscode/
 .env
-template.patch
+*.patch

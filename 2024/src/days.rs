@@ -1,3 +1,4 @@
+pub mod day5;
 pub mod day3;
 pub mod day1;
 pub mod day4;
@@ -13,6 +14,7 @@ pub struct MissingDay;
 
 pub fn day_from_i32(day: i32) -> Result<Box<dyn Day>, MissingDay> {
     match day {
+        5 => Ok(Box::new(day5::Day5)),
         3 => Ok(Box::new(day3::Day3)),
         1 => Ok(Box::new(day1::Day1)),
         4 => Ok(Box::new(day4::Day4)),

@@ -10,10 +10,12 @@ impl Part1 for Day3 {
             .unwrap()
             .find_iter(input)
             .fold(0, |acc, f| {
-                acc + Regex::new(r"\d{1,3}")
-                    .unwrap()
-                    .find_iter(f.as_str())
-                    .fold(1, |x, y| x * y.as_str().parse::<i32>().unwrap())
+                acc + f
+                    .as_str()
+                    .replace("mul(", "")
+                    .replace(")", "")
+                    .split(",")
+                    .fold(1, |prod, f| prod * f.parse::<i32>().unwrap())
             }) as usize
     }
 }
@@ -25,10 +27,12 @@ impl Part2 for Day3 {
                 .unwrap()
                 .find_iter(t.split("don't()").next().unwrap())
                 .fold(0, |acc, f| {
-                    acc + Regex::new(r"\d{1,3}")
-                        .unwrap()
-                        .find_iter(f.as_str())
-                        .fold(1, |x, y| x * y.as_str().parse::<i32>().unwrap())
+                    acc + f
+                        .as_str()
+                        .replace("mul(", "")
+                        .replace(")", "")
+                        .split(",")
+                        .fold(1, |prod, f| prod * f.parse::<i32>().unwrap())
                 })
         }) as usize
     }
@@ -37,6 +41,10 @@ impl Part2 for Day3 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[cfg(feature = "nightly")]
+    use crate::day::DayMeta;
+    #[cfg(feature = "nightly")]
+    use test::Bencher;
 
     #[test]
     fn test_part1() {
@@ -52,5 +60,19 @@ mod tests {
             Day3.part2("xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))"),
             48
         );
+    }
+
+    #[cfg(feature = "nightly")]
+    #[cfg_attr(feature = "nightly", bench)]
+    fn bench_part1(b: &mut Bencher) {
+        let input = Day3.get_input();
+        b.iter(|| Day3.part1(&input));
+    }
+
+    #[cfg(feature = "nightly")]
+    #[cfg_attr(feature = "nightly", bench)]
+    fn bench_part2(b: &mut Bencher) {
+        let input = Day3.get_input();
+        b.iter(|| Day3.part2(&input));
     }
 }

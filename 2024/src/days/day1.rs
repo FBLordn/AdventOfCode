@@ -7,8 +7,9 @@ impl_day!(Day1, 1);
 impl Part1 for Day1 {
     fn part1(&self, input: &str) -> usize {
         let lines = input.lines();
-        let mut first: Vec<usize> = vec![];
-        let mut last: Vec<usize> = vec![];
+        let size = input.lines().count();
+        let mut first: Vec<usize> = Vec::with_capacity(size);
+        let mut last: Vec<usize> = Vec::with_capacity(size);
         for i in lines {
             let t: Vec<&str> = i.split_whitespace().collect();
             first.push(t[0].parse::<usize>().unwrap());
@@ -16,15 +17,11 @@ impl Part1 for Day1 {
         }
 
         first.sort();
-        first.iter().fold(0, |acc, f| {
-            acc + last
-                .remove(
-                    last.iter()
-                        .position(|x| x == last.iter().min().unwrap())
-                        .unwrap(),
-                )
-                .abs_diff(*f)
-        })
+        last.sort();
+        first
+            .iter()
+            .zip(last.iter())
+            .fold(0, |s, f| s + (f.0).abs_diff(*f.1))
     }
 }
 

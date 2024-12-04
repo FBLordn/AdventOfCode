@@ -55,7 +55,23 @@ fn count_occurences<'a>(input: impl Iterator<Item: Iterator<Item = &'a char>>) -
 
 impl Part2 for Day4 {
     fn part2(&self, input: &str) -> usize {
-        todo!()
+        let lines: Vec<Vec<char>> = input.lines().map(|x| x.chars().collect()).collect();
+        let mut count = 0;
+        for line in 1..lines.len() - 1 {
+            for column in 1..lines[0].len() - 1 {
+                if lines[line][column] == 'A'
+                    && ((lines[line - 1][column - 1] == 'M' && lines[line + 1][column + 1] == 'S')
+                        || (lines[line + 1][column + 1] == 'M'
+                            && lines[line - 1][column - 1] == 'S'))
+                    && ((lines[line - 1][column + 1] == 'M' && lines[line + 1][column - 1] == 'S')
+                        || (lines[line + 1][column - 1] == 'M'
+                            && lines[line - 1][column + 1] == 'S'))
+                {
+                    count += 1;
+                }
+            }
+        }
+        count
     }
 }
 
@@ -88,7 +104,21 @@ MXMXAXMASX"
 
     #[test]
     fn test_part2() {
-        assert_eq!(Day4.part2(todo!()), todo!());
+        assert_eq!(
+            Day4.part2(
+                ".M.S......
+..A..MSMS.
+.M.S.MAA..
+..A.ASMSM.
+.M.S.M....
+..........
+S.S.S.S.S.
+.A.A.A.A..
+M.M.M.M.M.
+.........."
+            ),
+            9
+        );
     }
 
     #[cfg(feature = "nightly")]

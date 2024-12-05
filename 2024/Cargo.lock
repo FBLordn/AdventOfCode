@@ -97,6 +97,7 @@ dependencies = [
  "chrono",
  "clap",
  "dotenv",
+ "intmap",
  "regex",
  "reqwest",
  "rustc_version",
@@ -703,6 +704,12 @@ dependencies = [
  "equivalent",
  "hashbrown",
 ]
+
+[[package]]
+name = "intmap"
+version = "2.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ee87fd093563344074bacf24faa0bb0227fb6969fb223e922db798516de924d6"
 
 [[package]]
 name = "ipnet"

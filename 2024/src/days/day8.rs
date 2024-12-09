@@ -38,7 +38,6 @@ impl Part1 for Day8 {
                     && c.1 >= 0
                     && c.1 < lines.first().unwrap().len().try_into().unwrap()
             })
-            .inspect(|g| println!("{g:?}"))
             .count()
     }
 }

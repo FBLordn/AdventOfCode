@@ -1,5 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
+use num::Integer;
+
 use super::{impl_day, Part1, Part2};
 
 impl_day!(Day8, 8);
@@ -8,29 +10,29 @@ impl Part1 for Day8 {
     fn part1(&self, input: &str) -> usize {
         let lines: Vec<&str> = input.lines().collect();
         let mut antennas = HashMap::new();
-        lines.iter().enumerate().for_each(|(i, f)| {
-            f.chars()
-                .enumerate()
-                .filter(|l| l.1 != '.')
-                .for_each(|(x, c)| {
-                    antennas
-                        .entry(c)
-                        .and_modify(|list: &mut Vec<(i32, i32)>| {
-                            list.push((i.try_into().unwrap(), x.try_into().unwrap()))
-                        })
-                        .or_insert(vec![(i.try_into().unwrap(), x.try_into().unwrap())]);
-                });
-        });
-        let mut antinodes: HashSet<(i32, i32)> = HashSet::new();
-        antennas.values().for_each(|f| {
-            f.clone().iter().for_each(|g| {
-                f.iter().filter(|h| g != *h).for_each(|t| {
-                    antinodes.insert((g.0 - (t.0 - g.0), g.1 - (t.1 - g.1)));
-                    antinodes.insert((g.0 + 2 * (t.0 - g.0), g.1 + 2 * (t.1 - g.1)));
-                })
+        lines
+            .iter()
+            .enumerate()
+            .fold(HashSet::new(), |mut acc, (i, f)| {
+                f.chars()
+                    .enumerate()
+                    .filter(|l| l.1 != '.')
+                    .for_each(|(x, c)| {
+                        let g: i32 = i as i32;
+                        let y: i32 = x as i32;
+                        antennas
+                            .entry(c)
+                            .and_modify(|list: &mut Vec<(i32, i32)>| {
+                                list.iter().for_each(|ant| {
+                                    acc.insert((g - (ant.0 - g), y - (ant.1 - y)));
+                                    acc.insert((g + 2 * (ant.0 - g), y + 2 * (ant.1 - y)));
+                                });
+                                list.push((g, y));
+                            })
+                            .or_insert(vec![(g, y)]);
+                    });
+                acc
             })
-        });
-        antinodes
             .iter()
             .filter(|c| {
                 c.0 >= 0
@@ -44,7 +46,50 @@ impl Part1 for Day8 {
 
 impl Part2 for Day8 {
     fn part2(&self, input: &str) -> usize {
-        todo!()
+        let lines: Vec<&str> = input.lines().collect();
+        let mut antennas = HashMap::new();
+        lines
+            .iter()
+            .enumerate()
+            .fold(HashSet::new(), |mut acc, (i, f)| {
+                f.chars()
+                    .enumerate()
+                    .filter(|l| l.1 != '.')
+                    .for_each(|(x, c)| {
+                        let g: i32 = i as i32;
+                        let y: i32 = x as i32;
+                        antennas
+                            .entry(c)
+                            .and_modify(|list: &mut Vec<(i32, i32)>| {
+                                list.iter().for_each(|ant| {
+                                    let gcd = (g - ant.0).gcd(&(y - ant.1));
+                                    let dist = (((g - ant.0) / gcd), ((y - ant.1) / gcd));
+                                    let mut i = 0;
+                                    while g >= i * dist.0
+                                        && g - i * dist.0 < lines.len() as i32
+                                        && y >= i * dist.1
+                                        && y - i * dist.1 < lines.first().unwrap().len() as i32
+                                    {
+                                        acc.insert((g - i * dist.0, y - i * dist.1));
+                                        i += 1;
+                                    }
+                                    i = 1;
+                                    while g + i * dist.0 < lines.len() as i32
+                                        && g + i * dist.0 >= 0
+                                        && y + i * dist.1 < lines.first().unwrap().len() as i32
+                                        && y + i * dist.1 >= 0
+                                    {
+                                        acc.insert((g + i * dist.0, y + i * dist.1));
+                                        i += 1;
+                                    }
+                                });
+                                list.push((g, y));
+                            })
+                            .or_insert(vec![(g, y)]);
+                    });
+                acc
+            })
+            .len()
     }
 }
 
@@ -79,7 +124,23 @@ mod tests {
 
     #[test]
     fn test_part2() {
-        assert_eq!(Day8.part2(todo!()), todo!());
+        assert_eq!(
+            Day8.part2(
+                "............
+........0...
+.....0......
+.......0....
+....0.......
+......A.....
+............
+............
+........A...
+.........A..
+............
+............"
+            ),
+            34
+        );
     }
 
     #[cfg(feature = "nightly")]

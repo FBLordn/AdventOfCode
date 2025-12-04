@@ -1,4 +1,6 @@
 import re
+import time
+
 def part1():
     file = open("2025/day2/day2.txt", "r")
     sum = 0
@@ -17,5 +19,10 @@ def part2():
                 sum += int(i)
     print(f"Part 2: {sum}")
 if __name__ == '__main__':
+    start = time.time()
     part1()
+    mid = time.time()
     part2()
+    end = time.time()
+    print("day 2 part 1: ", mid-start, " secs")
+    print("day 2 part 1: ", end-mid, " secs")
